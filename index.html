@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selling Product</title>
+</head>
+<body>
+    <div class="container">
+        <label for="price"> Selling price</label>
+        <input type="number" name="price" id="price" required>
+        <label for="name">Product Name</label>
+        <input type="text" name="name" id="name">
+        <label for="choose">Choose a category</label>
+        <input type="text" name="choose" id="choose">
+        <button onclick="saveData()">Add Product</button>
+    </div>
+    <h3 >Product</h3>
+    <div id="items">
+    <h4 id="value1">Electronic item</h3>
+    <h4  id="value2">Food item</h3>
+    <h4 id="value3">Skincare item</h3>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"></script>
+    <script>
+        function saveData(event){
+        let price=document.getElementById('price').value;
+        let name=document.getElementById('name').value;
+        let select=document.getElementById('choose').value;
+            const obj={
+                price:price,
+                name:name,
+                select:select
+            }
+            axios.post('https://crudcrud.com/api/9387726c2ad641c59950f10c56b3be32/SellingData',obj)
+            .then((res)=>{
+             displayData(res.data);
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+            event.preventDefault();
+        }
+
+       window.addEventListener('DOMContentLoaded',()=>{
+        axios.get('https://crudcrud.com/api/9387726c2ad641c59950f10c56b3be32/SellingData')
+        .then((res)=> {
+            for(var i=0;i<res.data.length;i++){
+                displayData(res.data[i]);
+            }
+           })
+           .catch((err)=>{
+            console.log(err);
+           })
+        })
+       function displayData(user){
+        let value1=document.getElementById('value1');
+        let value2=document.getElementById('value2');
+        let value3=document.getElementById('value2');
+         let childNode=`<li id="${user._id}"> ${user.price} - ${user.name} - ${user.select}
+            <button onclick="deleteData('${user._id}')">Remove Item</button>
+           </li>`
+          if(value1.textContent===user.select){
+            value1.innerHTML=value1.innerHTML+childNode;
+          }
+          else if(value2.textContent===user.select){
+            value2.innerHTML=value2.innerHTML+childNode;
+          }
+          else{
+            value3.innerHTML=value3.innerHTML+childNode;
+          }
+    }
+
+        function deleteData(id){
+            axios.delete(`https://crudcrud.com/api/9387726c2ad641c59950f10c56b3be32/SellingData/${id}`)
+            .then(()=>{
+                removeFromScreen(id);
+            })
+            .catch((err)=>console.log(err))
+        }
+
+        function removeFromScreen(id){
+            let parentNode=document.getElementById('value2');
+            let childNode=document.getElementById(id);
+            if(childNode){
+                parentNode.removeChild(childNode);
+            }
+        }
+    </script>
+</body>
+</html>
